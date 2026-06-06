@@ -23,8 +23,8 @@ fi
 requestInterval=60 # seconds
 
 # VM params
-cpus=4 # max 4 cores
-ram=24 # max 24gb memory
+cpus=2 # max 4 cores
+ram=12 # max 24gb memory
 bootVolume=50 # disk size in gb
 
 profile="DEFAULT"
@@ -36,15 +36,26 @@ while true; do
     oci compute instance launch --no-retry  \
     --auth api_key \
     --profile "$profile" \
-    --display-name big-arm \
+    --display-name "a1-${cpus}c${ram}g-$(date +%s)" \
     --compartment-id "$TENANCY_ID" \
     --image-id "$IMAGE_ID" \
     --subnet-id "$SUBNET_ID" \
+    --assign-public-ip true \
     --availability-domain "$AVAILABILITY_DOMAIN" \
     --shape 'VM.Standard.A1.Flex' \
-    --shape-config "{'ocpus':$cpus,'memoryInGBs':$ram}" \
+    --shape-config "{\"ocpus\":$cpus,\"memoryInGBs\":$ram}" \
     --boot-volume-size-in-gbs "$bootVolume" \
-    --ssh-authorized-keys-file "$PATH_TO_PUBLIC_SSH_KEY"
+    --ssh-authorized-keys-file "$PATH_TO_PUBLIC_SSH_KEY" \
+    --wait-for-state "RUNNING" \
+    --max-wait-seconds 600
+
+    # Check if the command was successful // from https://github.com/maindust/oracle-cloud-free-arm-instance
+    if [ $? -eq 0 ]; then
+        echo "Instance created successfully! Exiting."
+        break
+    else
+        echo "Instance creation failed. Retrying in $requestInterval seconds..."
+    fi
 
     sleep $requestInterval
 done
