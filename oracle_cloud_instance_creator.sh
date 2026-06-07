@@ -12,7 +12,7 @@ fi
 # To verify that the authentication with Oracle cloud works
 echo "Checking Connection with this request: "
 oci iam compartment list
-if [ $? -ne 0 ]; then
+if [[ $? -ne 0 ]]; then
     echo "Connection to Oracle cloud is not working. Check your setup and config again!"
     exit 1
 fi
@@ -21,6 +21,7 @@ fi
 
 # Don't go too low or you run into 429 TooManyRequests
 requestInterval=60 # seconds
+backoffTime=300 # seconds
 
 # VM params
 cpus=2 # max 4 cores
@@ -33,7 +34,7 @@ profile="DEFAULT"
 
 while true; do
 
-    oci compute instance launch --no-retry  \
+    error_output=$(oci compute instance launch --no-retry  \
     --auth api_key \
     --profile "$profile" \
     --display-name "a1-${cpus}c${ram}g-$(date +%s)" \
@@ -47,15 +48,28 @@ while true; do
     --boot-volume-size-in-gbs "$bootVolume" \
     --ssh-authorized-keys-file "$PATH_TO_PUBLIC_SSH_KEY" \
     --wait-for-state "RUNNING" \
-    --max-wait-seconds 600
+    --max-wait-seconds 600 2>&1) || exit_code=$?
 
     # Check if the command was successful // from https://github.com/maindust/oracle-cloud-free-arm-instance
-    if [ $? -eq 0 ]; then
-        echo "Instance created successfully! Exiting."
-        break
-    else
-        echo "Instance creation failed. Retrying in $requestInterval seconds..."
+    if [[ "$exit_code" -eq 0 ]]; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): Instance created successfully! Exiting."
+        exit 0
     fi
 
-    sleep $requestInterval
+    if [[ echo "$error_output" | grep -qi "Out of host capacity" ]]; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): Out of host capacity. Retrying in $requestInterval seconds..."
+        sleep $requestInterval
+    elif [[ echo "$error_output" | grep -qi "TooManyRequests\|429" ]]; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): TooManyRequests. Retrying in $backoffTime seconds..."
+        sleep $backoffTime
+    elif [[ echo "$error_output" | grep -qi "InvalidParameter\|LimitExceeded\|NotAuthorizedOrNotFound" ]]; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter, LimitExceeded or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting."
+        echo "Error details: $error_output"
+        exit 1
+    else
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): An unexpected error occurred. Check the error message below and adjust your setup if necessary. Retrying in $backoffTime seconds..."
+        echo "Error details: $error_output"
+        sleep $backoffTime
+    fi
+
 done
