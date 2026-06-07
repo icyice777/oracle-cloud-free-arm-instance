@@ -51,18 +51,18 @@ while true; do
     --max-wait-seconds 600 2>&1) || exit_code=$?
 
     # Check if the command was successful // from https://github.com/maindust/oracle-cloud-free-arm-instance
-    if [[ "$exit_code" -eq 0 ]]; then
+    if [[ $exit_code -eq 0 ]]; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): Instance created successfully! Exiting."
         exit 0
     fi
 
-    if [[ echo "$error_output" | grep -qi "Out of host capacity" ]]; then
+    if echo "$error_output" | grep -qi "Out of host capacity"; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): Out of host capacity. Retrying in $requestInterval seconds..."
         sleep $requestInterval
-    elif [[ echo "$error_output" | grep -qi "TooManyRequests\|429" ]]; then
+    elif echo "$error_output" | grep -qi "TooManyRequests\|429"; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): TooManyRequests. Retrying in $backoffTime seconds..."
         sleep $backoffTime
-    elif [[ echo "$error_output" | grep -qi "InvalidParameter\|LimitExceeded\|NotAuthorizedOrNotFound" ]]; then
+    elif echo "$error_output" | grep -qi "InvalidParameter\|LimitExceeded\|NotAuthorizedOrNotFound"; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter, LimitExceeded or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting."
         echo "Error details: $error_output"
         exit 1
