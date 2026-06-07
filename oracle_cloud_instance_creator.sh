@@ -47,11 +47,11 @@ while true; do
     --shape-config "{\"ocpus\":$cpus,\"memoryInGBs\":$ram}" \
     --boot-volume-size-in-gbs "$bootVolume" \
     --ssh-authorized-keys-file "$PATH_TO_PUBLIC_SSH_KEY" \
-    --wait-for-state "RUNNING" \
+    --wait-for-state RUNNING \
     --max-wait-seconds 600 2>&1) || exit_code=$?
 
     # Check if the command was successful // from https://github.com/maindust/oracle-cloud-free-arm-instance
-    if [[ $exit_code -eq 0 ]]; then
+    if [[ "$exit_code" -eq 0 ]]; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): Instance created successfully! Exiting."
         exit 0
     fi
