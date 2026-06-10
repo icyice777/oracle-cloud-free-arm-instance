@@ -20,15 +20,15 @@ fi
 # ----------------------CUSTOMIZE---------------------------------------------------------------------------------------
 
 # Don't go too low or you run into 429 TooManyRequests
-requestInterval=60 # seconds
-backoffTime=300 # seconds
+requestInterval="$REQUEST_INTERVAL" # seconds
+backoffTime="$BACKOFF_TIME" # seconds
 
 # VM params
-cpus=2 # max 4 cores
-ram=12 # max 24gb memory
-bootVolume=50 # disk size in gb
+cpus="$CPUs" # max 4 cores for all Arm-based VM shapes
+ram="$RAM" # max 24gb memory for all Arm-based VM shapes
+bootVolume="$BOOT_VOLUME" # disk size in gb, max 200gb for all Arm-based VM shapes
 
-profile="DEFAULT"
+profile="$PROFILE" # OCI CLI profile name, default is "DEFAULT"
 
 # ----------------------ENDLESS LOOP TO REQUEST AN ARM INSTANCE---------------------------------------------------------
 

@@ -1,0 +1,11 @@
+version: "3.9"
+
+services:
+  oracle-cloud-free-arm-instance:
+    image: ghcr.io/icyice777/oracle-cloud-free-arm-instance:latest
+    container_name: oracle-cloud-free-arm-instance
+    volumes:
+      - ~/.oci:/root/.oci
+      - ./.env:/app/.env
+      - ./oracle-arm-ssh.key.pub:/app/oracle-arm-ssh.key.pub
+    restart: unless-stopped
