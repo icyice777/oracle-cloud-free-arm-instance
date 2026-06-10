@@ -69,7 +69,7 @@ while true; do
         # 1. Extract exactly one character (POSIX sh safe)
         # We use cut because it is lightweight and built into almost all containers
         # char=$(printf "%s" "$text" | cut -c $((i + 1)))
-        echo -n "$char"
+        echo "$char"
         # printf "%s" "$char"
         ((i++))
         # i=$((i + 1))
