@@ -32,15 +32,7 @@ profile="$PROFILE" # OCI CLI profile name, default is "DEFAULT"
 
 # ----------------------ENDLESS LOOP TO REQUEST AN ARM INSTANCE---------------------------------------------------------
 
-# text="Working hard to get you an instance up and running... Please wait. "
-# length=${#text}
-# length=$(echo "$text" | wc -c)
-# wc -c counts the newline, so we subtract 1 to get exact string length
-# length=$((length - 1))
-# i=0
-
 echo "Working hard to get you an instance up and running... Please wait. "
-echo ""
 
 while true; do
 
@@ -67,18 +59,7 @@ while true; do
     fi
 
     if echo "$error_output" | grep -qi "Out of host capacity"; then
-        # char="${text:$i:1}"
-        # 1. Extract exactly one character (POSIX sh safe)
-        # We use cut because it is lightweight and built into almost all containers
-        # char=$(printf "%s" "$text" | cut -c $((i + 1)))
-        # echo "$char"
-        # printf "%s" "$char"
-        # ((i++))
-        # i=$((i + 1))
-        # if [ $i -eq $length ]; then
-        #     i=0
-        # fi
-        echo -ne "$(date '+%Y-%m-%d %H:%M:%S'): Out of host capacity. Retrying in $requestInterval seconds...\r"
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): Out of host capacity. Retrying in $requestInterval seconds..."
         sleep $requestInterval
     elif echo "$error_output" | grep -qi "TooManyRequests\|429"; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): TooManyRequests. Retrying in $backoffTime seconds..."
