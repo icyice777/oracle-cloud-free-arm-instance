@@ -5,7 +5,7 @@ services:
     image: ghcr.io/icyice777/oracle-cloud-free-arm-instance:latest
     container_name: oracle-cloud-free-arm-instance
     volumes:
-      - ~/.oci:/root/.oci
+      - ~/.oci:/oracle/.oci
       - ./.env:/app/.env
       - ./oracle-arm-ssh.key.pub:/app/oracle-arm-ssh.key.pub
     restart: unless-stopped
