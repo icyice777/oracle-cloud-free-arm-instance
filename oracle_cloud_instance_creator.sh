@@ -39,7 +39,7 @@ length=${#text}
 # length=$((length - 1))
 i=0
 
-stdbuf -o0 while true; do
+while true; do
 
     error_output=$(oci compute instance launch --no-retry  \
     --auth api_key \

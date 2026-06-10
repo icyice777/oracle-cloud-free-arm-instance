@@ -1,0 +1,8 @@
+services:
+  oraclecloudfreearminstance:
+    image: oraclecloudfreearminstance
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      -
