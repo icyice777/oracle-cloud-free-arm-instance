@@ -33,6 +33,7 @@ profile="$PROFILE" # OCI CLI profile name, default is "DEFAULT"
 # ----------------------ENDLESS LOOP TO REQUEST AN ARM INSTANCE---------------------------------------------------------
 
 echo "Working hard to get you an instance up and running... Please wait. "
+echo "Working hard to get you an instance up and running... Please wait. " | mail -s "Start creating Oracle Instance" -S smtp="smtp://$SMTP_HOST:$SMTP_PORT" $RECIPIENT_EMAIL
 
 while true; do
 
@@ -55,6 +56,7 @@ while true; do
     # Check if the command was successful
     if [[ "$exit_code" -eq 0 ]]; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): Instance created successfully! Exiting."
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): Instance created successfully! Exiting." | mail -s "Oracle Instance Created Successfully" -S smtp="smtp://$SMTP_HOST:$SMTP_PORT" $RECIPIENT_EMAIL
         exit 0
     fi
 
@@ -67,6 +69,7 @@ while true; do
     elif echo "$error_output" | grep -qi "InvalidParameter\|LimitExceeded\|NotAuthorizedOrNotFound"; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter, LimitExceeded or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting."
         echo "Error details: $error_output"
+        echo -e "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter, LimitExceeded or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting. \n\nError details: \n$error_output" | mail -s "Oracle Instance Creation Failed and Exited!" -S smtp="smtp://$SMTP_HOST:$SMTP_PORT" $RECIPIENT_EMAIL
         exit 1
     else
         echo "$(date '+%Y-%m-%d %H:%M:%S'): An unexpected error occurred. Check the error message below and adjust your setup if necessary. Retrying in $backoffTime seconds..."
