@@ -8,4 +8,9 @@ services:
       - ~/.oci:/oracle/.oci
       - ./.env:/app/.env
       - ./oracle-arm-ssh.key.pub:/app/oracle-arm-ssh.key.pub
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     restart: unless-stopped
