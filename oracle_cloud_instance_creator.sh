@@ -72,7 +72,7 @@ while true; do
     elif echo "$error_output" | grep -qi "InvalidParameter\|NotAuthorizedOrNotFound"; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting."
         echo "Error details: $error_output"
-        echo -e "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter, LimitExceeded or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting. \n\nError details: \n$error_output" | mail -s "Oracle Instance Creation Failed and Exited!" -S smtp="smtp://$SMTP_HOST:$SMTP_PORT" $RECIPIENT_EMAIL
+        echo -e "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting. \n\nError details: \n$error_output" | mail -s "Oracle Instance Creation Failed and Exited!" -S smtp="smtp://$SMTP_HOST:$SMTP_PORT" $RECIPIENT_EMAIL
         sleep $backoffTime
         exit 1
     else
