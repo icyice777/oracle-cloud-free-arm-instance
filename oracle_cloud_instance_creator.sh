@@ -63,13 +63,17 @@ while true; do
     if echo "$error_output" | grep -qi "Out of host capacity"; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): Out of host capacity. Retrying in $requestInterval seconds..."
         sleep $requestInterval
+    elif echo "$error_output" | grep -qi "LimitExceeded"; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): LimitExceeded. Retrying in $requestInterval seconds..."
+        sleep $requestInterval
     elif echo "$error_output" | grep -qi "TooManyRequests\|429"; then
         echo "$(date '+%Y-%m-%d %H:%M:%S'): TooManyRequests. Retrying in $backoffTime seconds..."
         sleep $backoffTime
-    elif echo "$error_output" | grep -qi "InvalidParameter\|LimitExceeded\|NotAuthorizedOrNotFound"; then
-        echo "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter, LimitExceeded or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting."
+    elif echo "$error_output" | grep -qi "InvalidParameter\|NotAuthorizedOrNotFound"; then
+        echo "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting."
         echo "Error details: $error_output"
         echo -e "$(date '+%Y-%m-%d %H:%M:%S'): InvalidParameter, LimitExceeded or NotAuthorizedOrNotFound error. Check your setup and config again! Exiting. \n\nError details: \n$error_output" | mail -s "Oracle Instance Creation Failed and Exited!" -S smtp="smtp://$SMTP_HOST:$SMTP_PORT" $RECIPIENT_EMAIL
+        sleep $backoffTime
         exit 1
     else
         echo "$(date '+%Y-%m-%d %H:%M:%S'): An unexpected error occurred. Check the error message below and adjust your setup if necessary. Retrying in $backoffTime seconds..."
